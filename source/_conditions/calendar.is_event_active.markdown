@@ -7,8 +7,6 @@ description: "Tests if one or more calendars have an active event."
 
 The **Calendar event is active** condition passes when a calendar {% term entity %} has an active event. Use it to gate an automation so it only runs when a specific calendar event has started and not yet ended.
 
-{% include integrations/labs_entity_triggers_note.md %}
-
 {% include conditions/ui_header.md %}
 
 To use this condition in an automation:
@@ -75,8 +73,9 @@ Half an hour before sunset, if there is not an active event in the calendar, thi
 
 - **Trigger**: Sun
 - **Condition**: Calendar event is active
-- **Blocks**: Not
-- **Action**: Send notification via mobile_app_phone
+  - **Blocks**: Not
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for sending reminder for sunset run if no calendar event is active" %}
 
@@ -94,7 +93,9 @@ automation: |
           target:
             entity_id: calendar.my_calendar
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         message: Let's go for a sunset run!
 {% endexample %}

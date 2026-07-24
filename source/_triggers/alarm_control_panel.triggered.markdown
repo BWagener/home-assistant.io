@@ -2,15 +2,13 @@
 title: "Alarm triggered"
 trigger: alarm_control_panel.triggered
 domain: alarm_control_panel
-description: "Triggers after one or more alarms become triggered."
+description: "Triggers when one or more alarms become triggered."
 related_triggers:
   - alarm_control_panel.disarmed
   - alarm_control_panel.armed
 ---
 
 The **Alarm triggered** trigger fires the moment an alarm control panel {% term entity %} enters the triggered state. This is the state that means something set off the alarm, whether a door was opened, a window was broken, or motion was detected in a protected zone. Use this trigger to take immediate action: flash all the lights red, sound a siren, send an urgent notification to every household member, or start recording on your security cameras.
-
-{% include integrations/labs_entity_triggers_note.md %}
 
 {% include triggers/ui_header.md %}
 
@@ -54,10 +52,10 @@ YAML sometimes provides additional options for more complex use cases that are n
 {% options_yaml %}
 behavior:
   description: >
-    When multiple alarm panels are targeted, controls when the trigger fires. Accepts `any`, `first`, or `last`.
+    When multiple alarm panels are targeted, controls when the trigger fires. Accepts `each`, `first`, or `all`.
   required: false
   type: string
-  default: any
+  default: each
 for:
   description: >
     Duration the state must hold before firing. Accepts a duration string like `00:05:00` for five minutes.
@@ -85,11 +83,12 @@ for:
 The alarm just went off. Every light in the house flashes red and your phone gets a critical notification that cuts through silent mode. Whether you are asleep upstairs or away at work, you know immediately that something triggered the alarm.
 
 - **Trigger**: Alarm triggered
-- **Target**: Home alarm panel
-- **Trigger when**: Each
-- **For at least**: 00:00:00
+  - **Target**: Home alarm panel
+  - **Trigger when**: Each
+  - **For at least**: 00:00:00
 - **Action**: Flash all lights red
-- **Action**: Send a critical mobile notification
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for alarm triggered alert" %}
 
@@ -101,7 +100,7 @@ automation: |
       target:
         entity_id: alarm_control_panel.home_alarm
       options:
-        behavior: any
+        behavior: each
         for: "00:00:00"
   actions:
     - action: light.turn_on
@@ -110,7 +109,9 @@ automation: |
       data:
         color_name: red
         flash: long
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         title: "Alarm triggered!"
         message: >
@@ -141,7 +142,7 @@ automation: |
       target:
         entity_id: alarm_control_panel.home_alarm
       options:
-        behavior: any
+        behavior: each
         for: "00:00:00"
   actions:
     - action: siren.turn_on

@@ -9,8 +9,6 @@ related_conditions:
 
 The **Lock is jammed** condition helps you check whether a lock is currently stuck. Use it when you want an automation to react only while the problem is still present, like sending repeated reminders or turning on more light at the door.
 
-{% include integrations/labs_entity_triggers_note.md %}
-
 {% include conditions/ui_header.md %}
 
 To use this condition in an automation:
@@ -65,7 +63,7 @@ for:
     How long the lock must stay jammed before the condition passes. Accepts a
     duration like `00:01:00` for one minute.
   required: false
-  type: time
+  type: string
   default: "00:00:00"
 {% endoptions_yaml %}
 
@@ -89,10 +87,11 @@ If a first alert was missed, a follow-up reminder can help you fix the problem b
 
 - **Trigger**: Time pattern: Every 10 minutes
 - **Condition**: Lock is jammed
-- **Target**: Front door lock
-- **Condition passes if**: Any
-- **For at least**: 00:01:00
-- **Action**: Send a notification via mobile_app_phone
+  - **Target**: Front door lock
+  - **Condition passes if**: Any
+  - **For at least**: 00:01:00
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for repeated jammed lock reminders" %}
 
@@ -112,7 +111,7 @@ automation: |
   actions:
     - action: notify.send_message
       target:
-        entity_id: notify.mobile_app_phone
+        entity_id: notify.my_device
       data:
         title: "Front door lock still jammed"
         message: "Check the front door lock and clear the obstruction."

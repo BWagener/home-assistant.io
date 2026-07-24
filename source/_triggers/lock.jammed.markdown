@@ -2,14 +2,12 @@
 title: "Lock jammed"
 trigger: lock.jammed
 domain: lock
-description: "Triggers after one or more locks jam."
+description: "Triggers when one or more locks jam."
 related_triggers:
   - lock.locked
 ---
 
 The **Lock jammed** trigger helps you react when a lock cannot finish its movement. Use it when you want Home Assistant to warn you about a problem at the door, like a misaligned bolt or something blocking the lock.
-
-{% include integrations/labs_entity_triggers_note.md %}
 
 {% include triggers/ui_header.md %}
 
@@ -56,16 +54,16 @@ YAML sometimes provides additional options for more complex use cases that are n
 behavior:
   description: >
     When multiple locks are targeted, controls when the trigger fires.
-    Accepts `any`, `first`, or `last`.
+    Accepts `each`, `first`, or `all`.
   required: false
   type: string
-  default: any
+  default: each
 for:
   description: >
     How long the lock must stay jammed before the trigger fires. Accepts a
     duration like `00:01:00` for one minute.
   required: false
-  type: time
+  type: string
   default: "00:00:00"
 {% endoptions_yaml %}
 
@@ -88,10 +86,11 @@ for:
 If the front door lock jams while someone is leaving, you want to know right away so the door is not left unsecured. This automation sends a phone notification as soon as the lock reports a jam.
 
 - **Trigger**: Lock jammed
-- **Target**: Front door lock
-- **Trigger when**: Each
-- **For at least**: 00:00:00
-- **Action**: Send a notification via mobile_app_phone
+  - **Target**: Front door lock
+  - **Trigger when**: Each
+  - **For at least**: 00:00:00
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for a jammed lock alert" %}
 
@@ -103,10 +102,12 @@ automation: |
       target:
         entity_id: lock.front_door
       options:
-        behavior: any
+        behavior: each
         for: "00:00:00"
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         title: "Front door lock jammed"
         message: "Check the front door lock. It may be blocked."
@@ -135,7 +136,7 @@ automation: |
       target:
         label_id: outside_locks
       options:
-        behavior: any
+        behavior: each
         for: "00:00:10"
   conditions:
     - condition: sun

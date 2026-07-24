@@ -1,5 +1,5 @@
 ---
-title: Vacuum is paused
+title: Vacuum cleaner is paused
 condition: vacuum.is_paused
 domain: vacuum
 description: "Passes when the vacuum cleaner is paused."
@@ -9,8 +9,6 @@ The **Vacuum cleaner is paused** condition passes when one or more targeted vacu
 
 Use this when you want an automation to continue only if the robot is stopped mid-run, like sending a reminder, turning on a nearby light, or resuming later as part of a scheduled routine.
 
-{% include integrations/labs_entity_triggers_note.md %}
-
 {% include conditions/ui_header.md %}
 
 To use this condition in an automation:
@@ -18,7 +16,7 @@ To use this condition in an automation:
 1. Go to {% my automations title="**Settings** > **Automations & scenes**" %}.
 2. Open an existing automation, or select **Create automation** > **Create new automation**.
 3. In the **And if** section, select **Add condition**.
-4. From the search box, search for and select **Vacuum: Vacuum cleaner is paused**.
+4. From the search box, search for and select **Vacuum cleaner is paused**.
 5. Under **Targets**, select the vacuum entity, an area, a floor, or a label.
 6. Under **Condition passes if** (see [Behavior](#behavior-with-multiple-targets)), pick **Any** or **All**.
 7. Under **For at least**, enter how long the vacuum must stay paused before the condition passes.
@@ -62,9 +60,11 @@ behavior:
   type: string
   default: any
 for:
-  description: The time the vacuum must stay paused before the condition passes.
+  description: >
+    The time the vacuum must stay paused before the condition passes.
+    Accepts a duration like `00:00:10` for 10 seconds.
   required: false
-  type: time
+  type: string
 {% endoptions_yaml %}
 
 {% include conditions/targets.md %}
@@ -87,9 +87,10 @@ for:
 This automation checks every 15 minutes whether the hallway vacuum is paused. If it is, Home Assistant sends a reminder so you can decide whether to resume it or clear an obstacle.
 
 - **Trigger**: Every 15 minutes
-- **Condition**: Vacuum is paused
-- **Target**: Hallway vacuum
-- **Action**: Send notification via mobile_app_phone
+- **Condition**: Vacuum cleaner is paused
+  - **Target**: Hallway vacuum
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for a paused vacuum reminder" %}
 
@@ -106,7 +107,9 @@ automation: |
       options:
         behavior: any
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         title: "Vacuum is paused"
         message: "The hallway vacuum is still paused."

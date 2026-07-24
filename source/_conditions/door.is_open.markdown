@@ -11,8 +11,6 @@ The **Door is open** condition passes when one or more targeted doors are curren
 
 This condition is useful for reminders, security checks, and routines that should stop or warn you when a front door, patio door, or garage door has not been closed yet.
 
-{% include integrations/labs_entity_triggers_note.md %}
-
 {% include conditions/ui_header.md %}
 
 To use this condition in an automation:
@@ -63,7 +61,7 @@ for:
   description: >
     How long the door must have stayed open before the condition passes.
   required: false
-  type: time
+  type: string
   default: "00:00:00"
 {% endoptions_yaml %}
 
@@ -88,9 +86,10 @@ If you have created a {% term helper %} to mark bedtime, this automation can use
 
 - **Trigger**: Bedtime helper turns on
 - **Condition**: Door is open
-- **Target**: Front door, patio door, and garage door
-- **Condition passes if**: Any
-- **Action**: Notifications: Send a notification via `mobile_app_<name>`
+  - **Target**: Front door, patio door, and garage door
+  - **Condition passes if**: Any
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for a bedtime door check" %}
 
@@ -111,7 +110,9 @@ automation: |
       options:
         behavior: any
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         title: "A door is still open"
         message: "Check the front door, patio door, or garage door before bed."
@@ -125,9 +126,10 @@ When the last person leaves home, this automation checks whether the garage door
 
 - **Trigger**: Person leaves home zone
 - **Condition**: Door is open
-- **Target**: Garage door
-- **Condition passes if**: Any
-- **Action**: Notifications: Send a notification via `mobile_app_<name>`
+  - **Target**: Garage door
+  - **Condition passes if**: Any
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for checking the garage door when leaving" %}
 
@@ -146,7 +148,9 @@ automation: |
       options:
         behavior: any
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         title: "Garage door is open"
         message: "The garage door is still open, and you just left home."

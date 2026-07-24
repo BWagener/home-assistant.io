@@ -2,7 +2,7 @@
 title: "Alarm armed"
 trigger: alarm_control_panel.armed
 domain: alarm_control_panel
-description: "Triggers after one or more alarms become armed, regardless of the mode."
+description: "Triggers when one or more alarms become armed, regardless of the mode."
 related_triggers:
   - alarm_control_panel.armed_away
   - alarm_control_panel.armed_home
@@ -11,8 +11,6 @@ related_triggers:
 ---
 
 The **Alarm armed** trigger fires after an alarm control panel {% term entity %} becomes armed, regardless of the arming mode. It covers away, home, night, vacation, and any other armed state your alarm supports. Use it when you want a single automation to respond the moment the house is secured, like turning off all the lights, locking the front door, or sending a quick confirmation to your phone that the alarm is set.
-
-{% include integrations/labs_entity_triggers_note.md %}
 
 {% include triggers/ui_header.md %}
 
@@ -56,10 +54,10 @@ YAML sometimes provides additional options for more complex use cases that are n
 {% options_yaml %}
 behavior:
   description: >
-    When multiple alarm panels are targeted, controls when the trigger fires. Accepts `any`, `first`, or `last`.
+    When multiple alarm panels are targeted, controls when the trigger fires. Accepts `each`, `first`, or `all`.
   required: false
   type: string
-  default: any
+  default: each
 for:
   description: >
     Duration the state must hold before firing. Accepts a duration string like `00:05:00` for five minutes.
@@ -103,7 +101,7 @@ automation: |
       target:
         entity_id: alarm_control_panel.home_alarm
       options:
-        behavior: any
+        behavior: each
         for: "00:00:00"
   actions:
     - action: lock.lock
@@ -121,10 +119,11 @@ automation: |
 You want to know the alarm is set, especially when someone else in the household arms it. This automation sends a quick notification to your phone the instant any alarm panel in the house becomes armed.
 
 - **Trigger**: Alarm armed
-- **Target**: All alarm panels (by label)
-- **Trigger when**: Each
-- **For at least**: 00:00:00
-- **Action**: Send a mobile notification
+  - **Target**: All alarm panels (by label)
+  - **Trigger when**: Each
+  - **For at least**: 00:00:00
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for arm confirmation notification" %}
 
@@ -136,10 +135,12 @@ automation: |
       target:
         label_id: alarm_panels
       options:
-        behavior: any
+        behavior: each
         for: "00:00:00"
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         message: "The alarm has been armed."
 {% endexample %}

@@ -2,14 +2,12 @@
 title: "Gas cleared"
 trigger: air_quality.gas_cleared
 domain: air_quality
-description: "Triggers after one or more gas sensors stop detecting gas."
+description: "Triggers when one or more gas sensors stop detecting gas."
 related_triggers:
   - air_quality.gas_detected
 ---
 
 The **Gas cleared** trigger fires after a gas sensor {% term entity %} stops detecting gas, letting you know the danger has passed and the air is safe again. After the stress of a gas alert, there is real comfort in getting a clear, automatic confirmation that everything is back to normal. Use this trigger to send an all-clear notification, re-open a gas valve that was shut off during the alarm, or restore your home to its everyday state.
-
-{% include integrations/labs_entity_triggers_note.md %}
 
 {% include triggers/ui_header.md %}
 
@@ -53,10 +51,10 @@ YAML sometimes provides additional options for more complex use cases that are n
 {% options_yaml %}
 behavior:
   description: >
-    When multiple sensors are targeted, controls when the trigger fires. Accepts `any`, `first`, or `last`.
+    When multiple sensors are targeted, controls when the trigger fires. Accepts `each`, `first`, or `all`.
   required: true
   type: string
-  default: any
+  default: each
 for:
   description: >
     Duration the state must hold before firing. Accepts a duration string like `00:05:00` for five minutes.
@@ -84,10 +82,11 @@ for:
 After a gas alarm, the last thing you want is to keep wondering whether the situation is truly resolved. This automation waits until every gas sensor in the house has been clear for at least ten minutes, then sends a reassuring notification to your phone. No more checking the sensors yourself or second-guessing whether it is safe to go back inside.
 
 - **Trigger**: Gas cleared
-- **Target**: All gas sensors (by label)
-- **Trigger when**: All
-- **For at least**: 00:10:00
-- **Action**: Send a mobile notification
+  - **Target**: All gas sensors (by label)
+  - **Trigger when**: All
+  - **For at least**: 00:10:00
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for a gas all-clear notification" %}
 
@@ -99,10 +98,12 @@ automation: |
       target:
         label_id: gas_sensors
       options:
-        behavior: last
+        behavior: all
         for: "00:10:00"
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         message: "All gas sensors are clear."
         title: "Gas all-clear"

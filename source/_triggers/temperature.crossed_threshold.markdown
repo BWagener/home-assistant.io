@@ -2,7 +2,7 @@
 title: "Temperature crossed threshold"
 trigger: temperature.crossed_threshold
 domain: temperature
-description: "Triggers after one or more temperature readings cross a threshold."
+description: "Triggers when one or more temperature readings cross a threshold."
 related_triggers:
   - temperature.changed
 ---
@@ -13,54 +13,25 @@ Use **Temperature crossed threshold** to automate heating or cooling when the te
 
 When you target more than one entity, the trigger's **Trigger when** option controls when it fires.
 
-{% include integrations/labs_entity_triggers_note.md %}
-
 {% include triggers/ui_header.md %}
 
-To use **Temperature crossed threshold** in an automation:
-
-1. Go to {% my automations title="**Settings** > **Automations & scenes**" %}.
-2. Open an existing automation, or select **Create automation** > **Create new automation**.
-3. In the **When** section, select **Add trigger**.
-4. Select what you want to monitor. Under **By target** (see [Targets](#targets)), pick the area your temperature sensor is in (like your bedroom or living room). You can also select a device, a specific entity, or a label.
-5. From the triggers shown for that target, select **Temperature crossed threshold**.
-6. Under **Threshold type**, configure the zone the reading must enter for the trigger to fire:
-   - Select **Above** or **Below** and enter a value to fire when the reading crosses that level.
-   - Select **In range** and enter a lower and upper bound to fire when the reading enters the range from outside.
-   - Select **Outside range** and enter a lower and upper bound to fire when the reading leaves the range (crosses past either bound).
-   - For each option, you can enter a fixed temperature or pick a sensor entity or a [number helper](/integrations/input_number/) entity as the threshold.
-     - If you don't have a number helper, you can create one by selecting **Create a new number helper**.
-7. Under **Unit**, select the temperature unit (°C or °F) to use for the threshold comparison.
-8. Under **Trigger when** (see [Behavior](#behavior-with-multiple-targets)), pick **Each**, **First**, or **All** to control how the trigger behaves when multiple entities are targeted.
-9. Under **For at least**, set how long the reading must stay past the threshold before the trigger fires. Leave it at zero to fire immediately.
-10. Select **Save**.
+{% include triggers/threshold_crossed_steps.md
+   title="Temperature crossed threshold"
+   sensor="temperature sensor"
+   areas="bedroom or living room"
+   unit_phrase_ui="a fixed temperature"
+   has_unit="true"
+   unit_label="temperature unit"
+   unit_options="°C or °F" %}
 
 ### Options in the UI
 
-{% options_ui %}
-Threshold type:
-  description: |
-    Controls the zone the reading must enter for the trigger to fire:
-
-    - **Above** or **Below**: enter a value to fire when the reading crosses that level.
-    - **In range**: enter a lower and upper bound to fire when the reading enters the range from outside.
-    - **Outside range**: enter a lower and upper bound to fire when the reading leaves the range (crosses past either bound).
-
-    For each mode you can enter a fixed temperature or reference a sensor entity or [number helper](/integrations/input_number/) entity.
-Unit:
-  description: The temperature unit to use for threshold comparison. Accepts `°C` or `°F`. Required when using numerical thresholds (not required when using entity references). Default is `°C`.
-Trigger when:
-  description: |
-    When multiple entities are targeted, controls when the trigger fires:
-
-    - **Each**: fires every time any targeted entity crosses the threshold.
-    - **First**: fires only on the first crossing.
-    - **All**: fires only after every targeted entity crosses the threshold.
-
-    This corresponds to the `behavior` field in YAML. Default is **Each**.
-For at least:
-  description: How long the reading must remain past the threshold before the trigger fires. Useful to avoid triggering on brief fluctuations. For example, set it to `0:05:00` to fire only after the reading has stayed past the threshold for 5 minutes. Default is `0` (fires immediately).
-{% endoptions_ui %}
+{% include triggers/threshold_crossed_options_ui.md
+   unit_phrase_ui="a fixed temperature"
+   has_unit="true"
+   unit_label="temperature unit"
+   unit_options_code="`°C` or `°F`"
+   unit_default="°C" %}
 
 {% include triggers/yaml_header.md %}
 
@@ -106,48 +77,14 @@ trigger: |
 
 YAML sometimes provides additional options for more complex use cases that are not available through the UI.
 
-{% options_yaml %}
-threshold:
-  description: |
-    A mapping that defines the zone the reading must enter for the trigger to fire:
-
-    - `type: above` or `type: below`: Provide `value` with a `number` key (for a literal number) or an `entity` key (for an `input_number`, `number`, or `sensor` entity)
-    - `type: between` or `type: outside`: Provide `value_min` and `value_max`, each with a `number` key (for a literal number) or an `entity` key (for an `input_number`, `number`, or `sensor` entity)
-
-    When using the `number` key, you must also include `unit_of_measurement` to specify the temperature unit (`°C` or `°F`). When using the `entity` key, the unit is taken from the entity itself.
-
-    For example:
-
-    ```yaml
-    threshold:
-      type: between
-      value_min:
-        number: 18
-        unit_of_measurement: °C
-      value_max:
-        entity: input_number.max_comfort_temperature
-    ```
-
-    A `sensor` entity's current reading is used as the threshold, which lets you compare two temperature readings dynamically.
-  required: true
-  type: map
-behavior:
-  description: |
-    When multiple entities are targeted, controls when the trigger fires. Accepts:
-
-    - `any`: fires every time any targeted entity crosses the threshold.
-    - `first`: fires only on the first crossing.
-    - `last`: fires only after every targeted entity crosses the threshold.
-  required: false
-  type: string
-  default: any
-for:
-  description: |
-    How long the reading must remain past the threshold before the trigger fires. Accepts a duration string in `HH:MM:SS` format. For example, `00:05:00` fires only after the reading has stayed past the threshold for 5 minutes.
-  required: false
-  type: string
-  default: "00:00:00"
-{% endoptions_yaml %}
+{% include triggers/threshold_crossed_options_yaml.md
+   unit_phrase_yaml="literal number"
+   has_unit="true"
+   unit_label="temperature unit"
+   unit_options_code="`°C` or `°F`"
+   unit_default="°C"
+   unit_example_entity="input_number.max_comfort_temperature"
+   unit_example_value="18" %}
 
 {% include triggers/targets.md %}
 

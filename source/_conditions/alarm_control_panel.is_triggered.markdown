@@ -10,8 +10,6 @@ related_conditions:
 
 The **Alarm is triggered** condition passes when one or more alarm control panel {% term entities %} are in a triggered state. Use it to gate your emergency response so sirens and notifications only fire while the alarm is genuinely going off, preventing false follow-up actions after the situation has been resolved.
 
-{% include integrations/labs_entity_triggers_note.md %}
-
 {% include conditions/ui_header.md %}
 
 To use this condition in an automation:
@@ -86,9 +84,10 @@ When a panic button is pressed, send an urgent push notification with the alarm 
 
 - **Trigger**: State: Panic button pressed
 - **Condition**: Alarm is triggered
-- **Target**: Hallway alarm panel
-- **Condition passes if**: Any
-- **Action**: Notify: Send a mobile notification
+  - **Target**: Hallway alarm panel
+  - **Condition passes if**: Any
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for an emergency notification gated on triggered alarm" %}
 
@@ -105,7 +104,9 @@ automation: |
       options:
         behavior: any
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         title: "Alarm triggered"
         message: >

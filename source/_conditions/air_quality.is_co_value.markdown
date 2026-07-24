@@ -10,8 +10,6 @@ related_conditions:
 
 The **Carbon monoxide value** condition passes when a carbon monoxide (CO) sensor's reading meets a specific level. Carbon monoxide is a colorless, odorless gas produced by incomplete combustion, and even moderate levels deserve attention. This condition gives you finer control than simpler detected or cleared checks, letting you start ventilation at a lower reading and sound the full alarm only when concentrations climb higher.
 
-{% include integrations/labs_entity_triggers_note.md %}
-
 {% include conditions/ui_header.md %}
 
 To use this condition in an automation:
@@ -87,10 +85,11 @@ When you pull into the driveway, you want to know if the air inside is safe befo
 
 - **Trigger**: Zone: Person enters home zone
 - **Condition**: Air Quality: Carbon monoxide value
-- **Target**: Hallway CO sensor
-- **Threshold type**: 20
-- **Condition passes if**: Any
-- **Action**: Notify: Send notification
+  - **Target**: Hallway CO sensor
+  - **Threshold type**: 20
+  - **Condition passes if**: Any
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for a CO check on arrival home" %}
 
@@ -110,7 +109,9 @@ automation: |
         threshold: 20
         behavior: any
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         title: "CO level elevated at home"
         message: >

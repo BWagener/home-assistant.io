@@ -2,7 +2,7 @@
 title: "Relative humidity changed"
 trigger: humidity.changed
 domain: humidity
-description: "Triggers after one or more relative humidity readings change."
+description: "Triggers when one or more relative humidity values change."
 related_triggers:
   - humidity.crossed_threshold
 ---
@@ -13,40 +13,18 @@ The threshold type controls where the new reading must land for the trigger to f
 
 Use **Relative humidity changed** to log humidity trends, trigger a fan when the air in a room becomes noticeably more humid, or alert you when a sensor reading shifts in a way that might signal a problem.
 
-{% include integrations/labs_entity_triggers_note.md %}
-
 {% include triggers/ui_header.md %}
 
-To use **Relative humidity changed** in an automation:
-
-1. Go to {% my automations title="**Settings** > **Automations & scenes**" %}.
-2. Open an existing automation, or select **Create automation** > **Create new automation**.
-3. In the **When** section, select **Add trigger**.
-4. Select what you want to monitor. Under **By target** (see [Targets](#targets)), pick the area your humidity sensor is in (like your bathroom or bedroom). You can also select a device, a specific entity, or a label. When you target multiple entities (via area, label, or multiple entity selections), the trigger fires whenever any of them changes.
-5. From the triggers shown for that target, select **Relative humidity changed**.
-6. Under **Threshold type**, configure what kind of change fires the trigger:
-   - Select **Any change** to fire on any change, regardless of direction or new value.
-   - Select **Above** or **Below** and enter a value to fire only when the new reading is above or below that value.
-   - Select **In range** and enter a lower and upper bound to fire only when the new reading falls inside the range.
-   - Select **Outside range** and enter a lower and upper bound to fire only when the new reading is outside the range.
-   - For each option, you can enter a fixed percentage (0-100%), pick a sensor entity or a [number helper](/integrations/input_number/) entity as the threshold.
-     - If you don't have a number helper, you can create one by selecting **Create a new number helper**.
-7. Select **Save**.
+{% include triggers/threshold_changed_steps.md
+   title="Relative humidity changed"
+   sensor="humidity sensor"
+   areas="bathroom or bedroom"
+   unit_phrase_ui="a fixed percentage (0–100%)" %}
 
 ### Options in the UI
 
-{% options_ui %}
-Threshold type:
-  description: |
-    Controls which changes fire the trigger:
-
-    - **Any change**: fires on any change, regardless of direction or new value.
-    - **Above** or **Below**: enter a value to fire only when the new reading is above or below that value.
-    - **In range**: enter a lower and upper bound to fire only when the new reading falls between them.
-    - **Outside range**: enter a lower and upper bound to fire only when the new reading is below the lower bound or above the upper bound.
-
-    For each mode you can enter a fixed percentage (0-100%), reference a sensor entity or a [number helper](/integrations/input_number/) entity.
-{% endoptions_ui %}
+{% include triggers/threshold_changed_options_ui.md
+   unit_phrase_ui="a fixed percentage (0–100%)" %}
 
 {% include triggers/yaml_header.md %}
 
@@ -138,17 +116,8 @@ This fires whenever any humidity sensor in the basement area changes to a value 
 
 YAML sometimes provides additional options for more complex use cases that are not available through the UI.
 
-{% options_yaml %}
-threshold:
-  description: |
-    A mapping that defines which kind of change fires the trigger:
-
-    - `type: any`: Fires on any change (no additional keys needed).
-    - `type: above` or `type: below`: Provide `value` with a `number` key (for a literal number) or an `entity` key (for an `input_number`, `number`, or `sensor` entity).
-    - `type: between` or `type: outside`: Provide `value_min` and `value_max`, each with a `number` key (for a literal number) or an `entity` key (for an `input_number`, `number`, or `sensor` entity).
-  required: true
-  type: map
-{% endoptions_yaml %}
+{% include triggers/threshold_changed_options_yaml.md
+   unit_phrase_yaml="literal percentage 0–100" %}
 
 {% include triggers/targets.md %}
 
@@ -206,7 +175,7 @@ Track how much the humidity in your greenhouse shifts throughout the day by send
   - **Target**: Greenhouse humidity sensor
   - **Threshold type**: Any change
 - **Action**: Send a notification
-  - **Target**: notify.mobile_app_phone
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for greenhouse humidity logging" %}
 
@@ -223,7 +192,7 @@ automation: |
   actions:
     - action: notify.send_message
       target:
-        entity_id: notify.mobile_app_phone
+        entity_id: notify.my_device
       data:
         message: "Greenhouse humidity changed significantly."
 {% endexample %}
@@ -237,8 +206,8 @@ Send a notification whenever the bedroom humidity changes to a level above your 
 - **Trigger**: Relative humidity changed
   - **Target**: Bedroom humidity sensor
   - **Threshold type**: Above (entity: comfort humidity threshold)
-- **Action**: Send a notification
-  - **Target**: notify.mobile_app_phone
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for using a number helper as threshold" %}
 
@@ -257,7 +226,7 @@ automation: |
   actions:
     - action: notify.send_message
       target:
-        entity_id: notify.mobile_app_phone
+        entity_id: notify.my_device
       data:
         message: >-
           Bedroom humidity is now {{ trigger.to_state.state }}%, above

@@ -2,14 +2,12 @@
 title: "Smoke cleared"
 trigger: air_quality.smoke_cleared
 domain: air_quality
-description: "Triggers after one or more smoke sensors stop detecting smoke."
+description: "Triggers when one or more smoke sensors stop detecting smoke."
 related_triggers:
   - air_quality.smoke_detected
 ---
 
 The **Smoke cleared** trigger fires after a smoke sensor {% term entity %} stops detecting smoke, letting your home confirm that the danger has passed and it is safe to breathe easy again. After the chaos of a smoke alarm, an automatic all-clear brings real relief. Use this trigger to re-lock doors that were unlocked during evacuation, send a reassuring notification to your family, or restore your home to its normal routine.
-
-{% include integrations/labs_entity_triggers_note.md %}
 
 {% include triggers/ui_header.md %}
 
@@ -53,10 +51,10 @@ YAML sometimes provides additional options for more complex use cases that are n
 {% options_yaml %}
 behavior:
   description: >
-    When multiple sensors are targeted, controls when the trigger fires. Accepts `any`, `first`, or `last`.
+    When multiple sensors are targeted, controls when the trigger fires. Accepts `each`, `first`, or `all`.
   required: true
   type: string
-  default: any
+  default: each
 for:
   description: >
     Duration the state must hold before firing. Accepts a duration string like `00:05:00` for five minutes.
@@ -84,11 +82,12 @@ for:
 After a smoke event, your front door was unlocked to help everyone evacuate safely. Once every smoke sensor has been clear for fifteen minutes, this automation locks the door again and sends a reassuring notification to your phone. Your home goes back to being secure, and you know the situation is truly resolved without having to check every sensor yourself.
 
 - **Trigger**: Smoke cleared
-- **Target**: All smoke sensors (by label)
-- **Trigger when**: All
-- **For at least**: 00:15:00
+  - **Target**: All smoke sensors (by label)
+  - **Trigger when**: All
+  - **For at least**: 00:15:00
 - **Action**: Lock: Lock
-- **Action**: Send a mobile notification
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for re-locking after smoke clears" %}
 
@@ -100,13 +99,15 @@ automation: |
       target:
         label_id: smoke_sensors
       options:
-        behavior: last
+        behavior: all
         for: "00:15:00"
   actions:
     - action: lock.lock
       target:
         entity_id: lock.front_door
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         message: "All smoke sensors are clear."
         title: "Smoke all-clear"

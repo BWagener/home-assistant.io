@@ -2,7 +2,7 @@
 title: "Carbon monoxide level crossed threshold"
 trigger: air_quality.co_crossed_threshold
 domain: air_quality
-description: "Triggers after one or more carbon monoxide levels cross a threshold."
+description: "Triggers when one or more carbon monoxide levels cross a threshold."
 related_triggers:
   - air_quality.co_changed
 ---
@@ -10,8 +10,6 @@ related_triggers:
 The **Carbon monoxide level crossed threshold** trigger fires when a carbon monoxide (CO) reading on one or more air quality sensors crosses a specific level. Carbon monoxide is a colorless, odorless gas produced by incomplete combustion of fuels, and it is life-threatening at elevated concentrations. Most residential CO alarms activate around 35 to 70 ppm, but you deserve to know the moment levels start climbing, not just when an alarm goes off.
 
 Imagine getting an urgent alert on your phone the second CO reaches a dangerous level in the garage, even in the middle of the night. Or having your exhaust fan kick on automatically when a sensor detects rising CO while you are away. This trigger gives you that early warning, so your home protects your family before a situation becomes critical.
-
-{% include integrations/labs_entity_triggers_note.md %}
 
 {% include triggers/ui_header.md %}
 
@@ -49,7 +47,7 @@ trigger: |
     entity_id: sensor.living_room_co
   options:
     threshold: 35
-    behavior: any
+    behavior: each
 {% endexample %}
 
 This fires whenever the living room CO sensor crosses 35 ppm in either direction.
@@ -66,10 +64,10 @@ threshold:
   type: any
 behavior:
   description: >
-    When multiple sensors are targeted, controls when the trigger fires. Accepts `any`, `first`, or `last`.
+    When multiple sensors are targeted, controls when the trigger fires. Accepts `each`, `first`, or `all`.
   required: true
   type: string
-  default: any
+  default: each
 for:
   description: >
     How long the reading must remain past the threshold before the trigger fires. Accepts a duration string in `HH:MM:SS` format.
@@ -97,10 +95,11 @@ for:
 Nobody wants to discover a CO problem too late. This automation sends an urgent notification straight to your phone the moment the garage sensor crosses 35 ppm, giving you time to open the door and check for running engines or faulty appliances.
 
 - **Trigger**: Carbon monoxide level crossed threshold
-- **Target**: Garage CO sensor
-- **Threshold type**: 35
-- **Trigger when**: Each
-- **Action**: Notify mobile app
+  - **Target**: Garage CO sensor
+  - **Threshold type**: 35
+  - **Trigger when**: Each
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for a garage CO threshold alert" %}
 
@@ -113,9 +112,11 @@ automation: |
         entity_id: sensor.garage_co
       options:
         threshold: 35
-        behavior: any
+        behavior: each
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         title: "Carbon monoxide warning"
         message: >

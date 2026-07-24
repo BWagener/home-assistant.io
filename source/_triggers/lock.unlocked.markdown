@@ -2,14 +2,12 @@
 title: "Lock unlocked"
 trigger: lock.unlocked
 domain: lock
-description: "Triggers after one or more locks unlock."
+description: "Triggers when one or more locks unlock."
 related_triggers:
   - lock.locked
 ---
 
 The **Lock unlocked** trigger helps you react when a lock reaches the unlocked state. Use it when you want Home Assistant to welcome someone home, keep track of entry events, or adjust security devices after a door is no longer locked.
-
-{% include integrations/labs_entity_triggers_note.md %}
 
 {% include triggers/ui_header.md %}
 
@@ -56,16 +54,16 @@ YAML sometimes provides additional options for more complex use cases that are n
 behavior:
   description: >
     When multiple locks are targeted, controls when the trigger fires.
-    Accepts `any`, `first`, or `last`.
+    Accepts `each`, `first`, or `all`.
   required: false
   type: string
-  default: any
+  default: each
 for:
   description: >
     How long the lock must stay unlocked before the trigger fires. Accepts a
     duration like `00:00:10` for 10 seconds.
   required: false
-  type: time
+  type: string
   default: "00:00:00"
 {% endoptions_yaml %}
 
@@ -103,7 +101,7 @@ automation: |
       target:
         entity_id: lock.front_door
       options:
-        behavior: any
+        behavior: each
         for: "00:00:00"
   actions:
     - action: light.turn_on
@@ -118,10 +116,11 @@ automation: |
 If several storage areas use smart locks, you may want a quick record when one of them is unlocked. This automation sends a phone notification when any targeted storage lock unlocks.
 
 - **Trigger**: Lock unlocked
-- **Target**: Storage locks (by label)
-- **Trigger when**: Each
-- **For at least**: 00:00:00
-- **Action**: Send a notification via mobile_app_phone
+  - **Target**: Storage locks (by label)
+  - **Trigger when**: Each
+  - **For at least**: 00:00:00
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for a storage lock notification" %}
 
@@ -133,10 +132,12 @@ automation: |
       target:
         label_id: storage_locks
       options:
-        behavior: any
+        behavior: each
         for: "00:00:00"
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         title: "Storage door unlocked"
         message: "One of the storage door locks has been unlocked."

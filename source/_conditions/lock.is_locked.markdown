@@ -9,8 +9,6 @@ related_conditions:
 
 The **Lock is locked** condition helps you check whether a lock is currently secure. Use it when an automation should continue only after a door has been locked, like arming an alarm or turning off devices near an entry.
 
-{% include integrations/labs_entity_triggers_note.md %}
-
 {% include conditions/ui_header.md %}
 
 To use this condition in an automation:
@@ -65,7 +63,7 @@ for:
     How long the lock must stay locked before the condition passes. Accepts a
     duration like `00:05:00` for five minutes.
   required: false
-  type: time
+  type: string
   default: "00:00:00"
 {% endoptions_yaml %}
 

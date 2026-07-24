@@ -10,8 +10,6 @@ related_conditions:
 
 The **Alarm is armed night** condition passes when one or more alarm control panel {% term entities %} are armed in night mode. Use it to adjust how your home behaves while everyone is asleep. Hallway lights dim to a gentle glow instead of full brightness, the doorbell stops chiming through the speakers, and automations that would disturb sleep simply don't run.
 
-{% include integrations/labs_entity_triggers_note.md %}
-
 {% include conditions/ui_header.md %}
 
 To use this condition in an automation:
@@ -88,7 +86,7 @@ When the hallway motion sensor detects movement, turn on the hallway light at 10
 - **Condition**: Alarm is armed night
 - **Target**: Hallway alarm panel
 - **Condition passes if**: Any
-- **Action**: Light: Turn on at 10% brightness
+- **Action**: Turn on light (at 10% brightness)
 
 {% details "YAML example for a dim hallway nightlight when armed night" %}
 
@@ -121,7 +119,8 @@ The doorbell normally announces visitors through every speaker, but nobody wants
 
 - **Trigger**: State: Doorbell pressed
 - **Condition**: Alarm is armed night
-- **Action**: Send a quiet phone notification (skip the speaker announcement)
+- **Action**: Send a notification message (skip the speaker announcement)
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for silencing the doorbell at night" %}
 
@@ -139,7 +138,9 @@ automation: |
       options:
         behavior: any
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         title: "Doorbell"
         message: "Someone is at the door."

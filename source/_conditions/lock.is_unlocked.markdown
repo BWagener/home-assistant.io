@@ -9,8 +9,6 @@ related_conditions:
 
 The **Lock is unlocked** condition helps you check whether a lock is currently unlocked. Use it when an automation should continue only while a door is not secured, like reminding you to lock up before bed.
 
-{% include integrations/labs_entity_triggers_note.md %}
-
 {% include conditions/ui_header.md %}
 
 To use this condition in an automation:
@@ -65,7 +63,7 @@ for:
     How long the lock must stay unlocked before the condition passes. Accepts
     a duration like `00:10:00` for 10 minutes.
   required: false
-  type: time
+  type: string
   default: "00:00:00"
 {% endoptions_yaml %}
 
@@ -89,10 +87,11 @@ If you sometimes forget to lock the door before bed, a gentle reminder can help.
 
 - **Trigger**: Time: 22:00
 - **Condition**: Lock is unlocked
-- **Target**: Front door lock
-- **Condition passes if**: Any
-- **For at least**: 00:10:00
-- **Action**: Send a notification via mobile_app_phone
+  - **Target**: Front door lock
+  - **Condition passes if**: Any
+  - **For at least**: 00:10:00
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for a bedtime lock reminder" %}
 
@@ -110,7 +109,9 @@ automation: |
         behavior: any
         for: "00:10:00"
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         title: "Front door still unlocked"
         message: "The front door has stayed unlocked for 10 minutes."

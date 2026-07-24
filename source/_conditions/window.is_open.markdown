@@ -9,8 +9,6 @@ related_conditions:
 
 The **Window is open** condition passes when a targeted window is currently open. Use it when you want an automation to continue only if fresh air is coming in, or when you want to warn someone before leaving the house with a window still open.
 
-{% include integrations/labs_entity_triggers_note.md %}
-
 {% include conditions/ui_header.md %}
 
 To use this condition in an automation:
@@ -87,9 +85,10 @@ At bedtime, a reminder can help you notice an open window before you lock up for
 
 - **Trigger**: Time: 22:30
 - **Condition**: Window is open
-- **Target**: Downstairs windows label
-- **Condition passes if**: Any
-- **Action**: Send a mobile notification
+  - **Target**: Downstairs windows label
+  - **Condition passes if**: Any
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for a bedtime open-window reminder" %}
 
@@ -107,7 +106,9 @@ automation: |
         behavior: any
         for: "00:00:00"
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         title: "Window still open"
         message: "At least one downstairs window is still open."

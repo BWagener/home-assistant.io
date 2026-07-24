@@ -2,14 +2,12 @@
 title: "Window opened"
 trigger: window.opened
 domain: window
-description: "Triggers after one or more windows open."
+description: "Triggers when one or more windows open."
 related_triggers:
   - window.closed
 ---
 
 The **Window opened** trigger fires when a targeted window opens. Use it when you want Home Assistant to react right away, like sending an alert when a window opens after dark or pausing heating when fresh air starts coming in.
-
-{% include integrations/labs_entity_triggers_note.md %}
 
 {% include triggers/ui_header.md %}
 
@@ -55,10 +53,10 @@ YAML sometimes provides additional options for more complex use cases that are n
 {% options_yaml %}
 behavior:
   description: >
-    When multiple windows are targeted, controls when the trigger fires. Accepts `any`, `first`, or `last`.
+    When multiple windows are targeted, controls when the trigger fires. Accepts `each`, `first`, or `all`.
   required: true
   type: string
-  default: any
+  default: each
 for:
   description: >
     Duration the window must stay open before the trigger fires. Accepts a duration string like `00:05:00` for five minutes.
@@ -86,11 +84,12 @@ for:
 If a kitchen window opens after dark, a quick notification can help you notice it before you lock up for the night.
 
 - **Trigger**: Window opened
-- **Target**: Kitchen window sensor
-- **Trigger when**: Each
-- **For at least**: 00:00:00
+  - **Target**: Kitchen window sensor
+  - **Trigger when**: Each
+  - **For at least**: 00:00:00
 - **Condition**: Sun is below horizon
-- **Action**: Send a mobile notification
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for a nighttime window-open notification" %}
 
@@ -102,13 +101,15 @@ automation: |
       target:
         entity_id: binary_sensor.kitchen_window
       options:
-        behavior: any
+        behavior: each
         for: "00:00:00"
   conditions:
     - condition: sun
       after: sunset
   actions:
-    - action: notify.mobile_app_phone
+    - action: notify.send_message
+      target:
+        entity_id: notify.my_device
       data:
         title: "Kitchen window opened"
         message: "The kitchen window was opened after sunset."
@@ -136,7 +137,7 @@ automation: |
       target:
         entity_id: cover.hallway_skylight
       options:
-        behavior: any
+        behavior: each
         for: "00:02:00"
   actions:
     - action: climate.turn_off

@@ -2,49 +2,25 @@
 title: "Relative humidity"
 condition: humidity.is_value
 domain: humidity
-description: "Tests if a relative humidity value is above a threshold, below a threshold, or in a range of values."
+description: "Tests the relative humidity of one or more entities."
 ---
 
 The **Relative humidity** condition passes when a humidity reading meets a threshold you define. You can check that humidity is above, below, or within a specific range. The condition works with humidity sensors, climate devices, humidifiers, and weather entities. Use it to run an automation only when the bedroom feels too damp, or only when the air is dry enough to need attention.
 
 When you target more than one entity, the condition's **Condition passes if** option controls how the check combines results. You can require any targeted entity to meet the threshold, or demand that all of them do.
 
-{% include integrations/labs_entity_triggers_note.md %}
-
 {% include conditions/ui_header.md %}
 
-To use **Relative humidity** in an automation:
-
-1. Go to {% my automations title="**Settings** > **Automations & scenes**" %}.
-2. Open an existing automation, or select **Create automation** > **Create new automation**.
-3. In the **And if** section, select **Add condition**.
-4. Select what you want to check. Under **By target** (see [Targets](#targets)), pick the area your humidity sensor is in (like your bedroom or bathroom). You can also select a device, a specific entity, or a label.
-5. From the conditions shown for that target, select **Relative humidity**.
-6. Under **Threshold type**, set the humidity level the condition checks against:
-   1. Pick whether the reading must be **Above**, **Below**, **In range**, or **Outside range** of the threshold.
-   2. Select **Number** or **Entity**:
-      - **Number**: Enter a fixed percentage directly, for example `65` for 65%. For **In range** or **Outside range**, enter both a lower and upper bound.
-      - **Entity**: Use a sensor entity or a [number helper](/integrations/input_number/) entity as the threshold:
-        - Number helper: You can adjust the threshold value without editing the automation. The sensor reading is compared against the number helper's current value.
-        - Sensor: Its current reading becomes the threshold and updates automatically as the sensor changes. This is useful for comparing two humidity readings, for example to check whether indoor humidity is higher than outdoor humidity.
-        - For **In range** or **Outside range**, you need two entities: one for the lower bound and one for the upper bound (for example, two separate number helpers).
-        - If you don't have a number helper, you can create one by selecting **Create a new number helper**.
-7. Under **Condition passes if** (see [Behavior](#behavior-with-multiple-targets)), pick **Any** or **All**.
-8. Select **Save**.
+{% include conditions/threshold_value_steps.md
+   title="Relative humidity"
+   sensor="humidity sensor"
+   areas="bedroom or bathroom"
+   value_long="a fixed percentage directly, for example `65` for 65%" %}
 
 ### Options in the UI
 
-{% options_ui %}
-Threshold type:
-  description: |
-    The humidity level the entity has to meet for the condition to pass. Options are **Above**, **Below**, **In range**, or **Outside range**. **Number** provides a fixed percentage (0-100%) or both a lower and upper bound for ranges. **Entity** uses a sensor or number helper as a dynamic threshold.
-Condition passes if:
-  description: |
-    When multiple entities are targeted, controls how results combine:
-
-    - **Any**: The condition passes if at least one targeted entity meets the threshold (default).
-    - **All**: The condition passes only when every targeted entity meets the threshold.
-{% endoptions_ui %}
+{% include conditions/threshold_value_options_ui.md
+   value_short="a fixed percentage (0–100)" %}
 
 {% include conditions/yaml_header.md %}
 
@@ -140,35 +116,9 @@ This passes when the bedroom humidity sensor reads above the number helper´s va
 
 ### Options in YAML
 
-{% options_yaml %}
-threshold:
-  description: |
-    The humidity level the entity has to meet for the condition to pass:
-
-    - `above`: Sets a minimum
-    - `below`: Sets a maximum
-    - `between`: Defines a range
-    - `outside`: Defines an outside-range
-
-    For `above` and `below`, use `value` with either `number` (0 to 100) or `entity`. For `between` and `outside`, use `value_min` and `value_max`, each with either `number` (0 to 100) or `entity`. For example:
-
-    - A fixed percentage (0-100%).
-    - A reference to an `input_number`, `number`, or `sensor` entity.
-      - `input_number`: Lets you change the threshold without editing the automation. To create one, see [Number helper](/integrations/input_number/).
-      - `number`: Uses the current value of a number entity as the threshold.
-      - `sensor`: Uses the current reading as the threshold when the condition is evaluated, which lets you compare two humidity readings dynamically, for example, checking whether indoor humidity is above outdoor humidity.
-  required: false
-  type: map
-behavior:
-  description: |
-    When multiple entities are targeted, controls how results combine:
-
-    - `any`: The condition passes if at least one targeted entity meets the threshold.
-    - `all`: The condition passes only when every targeted entity meets the threshold.
-  required: false
-  type: string
-  default: any
-{% endoptions_yaml %}
+{% include conditions/threshold_value_options_yaml.md
+   range_note="0–100"
+   number_final="a percentage value (0–100)" %}
 
 {% include conditions/targets.md %}
 
@@ -233,8 +183,8 @@ At midnight, check the living room humidity. If it has dropped below 30%, send a
 - **Condition**: Relative humidity (below 30%)
   - **Target**: Living room humidity sensor
   - **Condition passes if**: Any
-- **Action**: Send a notification
-  - **Target**: notify.mobile_app_phone
+- **Action**: Send a notification message
+  - **Target**: My Device (`notify.my_device`)
 
 {% details "YAML example for a low humidity alert" %}
 
@@ -257,7 +207,7 @@ automation: |
   actions:
     - action: notify.send_message
       target:
-        entity_id: notify.mobile_app_phone
+        entity_id: notify.my_device
       data:
         message: >
           The living room humidity is below 30%.
